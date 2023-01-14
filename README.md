@@ -8,17 +8,15 @@
 ```
 docker-compose up --build
 ```
-# Check works urls:
-
-prometheus: http://localhost:9090/
-
-loki: http://localhost:3100/
-
-# Dashboaords
+# Dashboards:
 
 traefik: http://localhost:8080/
 
 grafana: http://localhost:3000/
+
+prometheus: http://localhost:9090/
+
+loki: http://localhost:3100/
 
 app1: http://app1.com
 
