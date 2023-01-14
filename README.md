@@ -13,7 +13,7 @@ prometheus: http://localhost:9090/
 
 loki: http://localhost:3100/
 
-# Traefik dashboaord
+# Dashboaords
 
 traefik: http://localhost:8080/
 
@@ -21,6 +21,9 @@ grafana: http://localhost:3000/
 
 app1: http://app1.com
 
+zipkin: http://localhost:9411/zipkin/?lookback=15m&endTs=1673705203034&limit=10
+
+prometheus: http://localhost:9090
 
 
 
