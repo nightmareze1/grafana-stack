@@ -8,7 +8,9 @@
 docker-compose up --build
 
 # Check works urls:
+
 prometheus: http://localhost:9090/
+
 loki: http://localhost:3100/
 
 # Traefik dashboaord
@@ -22,7 +24,7 @@ app1: http://app1.com
 
 
 
-Play:
+## Demo:
 
 Open url: http://localhost:3000/d/A0DfKMcik/traefik-status-codes-microservices?orgId=1&refresh=5s
 
