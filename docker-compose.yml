@@ -65,6 +65,7 @@ services:
   app1:
       hostname: app1
       image: nightmareze1/nginx:v0.0.19
+      container_name: app1
       labels:
       - "traefik.enable=true"
       - "traefik.http.routers.app1.rule=Host(`app1.com`)"
