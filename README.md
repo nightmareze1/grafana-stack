@@ -1,13 +1,8 @@
-# You need add in your /etc/host
-
-```
-127.0.0.1 app1.com
-```
-
-# Later, running: 
+# Launch Monitoring Stack: 
 ```
 docker-compose up --build
 ```
+
 # Dashboards:
 
 traefik: http://localhost:8080/
