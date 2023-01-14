@@ -21,9 +21,14 @@ services:
     build:
       context: ./prometheus
       dockerfile: Dockerfile
+    container_name: prometheus
     volumes:
      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
     command: "--config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus"
+    healthcheck:
+      interval: 5s
+      retries: 10
+      test: wget --no-verbose --tries=1 --spider http://localhost:9090/status || exit 1
     links:
     - traefik
     networks:
@@ -34,10 +39,14 @@ services:
 
   grafana:
     image: grafana/grafana:latest
+    container_name: grafana
     volumes:
     # persistency
     # grafana/data;sudo chown -R 472:472 grafana/data
     - ./grafana/data:/var/lib/grafana
+    # - ./grafana/delete-datasource.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    - ./grafana/grafana-bootstrap.ini:/etc/grafana/grafana.ini
+    - ./grafana/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
     env_file:
     - ./grafana/config.env 
     links:
@@ -64,18 +73,34 @@ services:
 
   app1:
       hostname: app1
-      image: nightmareze1/nginx:v0.0.19
+      # image: nightmareze1/nginx:v0.0.19
+      build:
+       context: ./app
+       dockerfile: Dockerfile
       container_name: app1
+      depends_on:
+        - collector
       labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.app1.rule=Host(`app1.com`)"
-      - "traefik.http.routers.app1.entrypoints=web"
+        - "traefik.enable=true"
+        - "traefik.http.routers.app1.rule=Host(`app1.com`)"
+        - "traefik.http.routers.app1.entrypoints=web"
+      ports:
+        - "8888:8888"
+      environment:
+        - OTEL_TRACES_EXPORTER=otlp
+        - OTEL_METRICS_EXPORTER=otlp
+        - OTEL_EXPORTER_OTLP_ENDPOINT=http://collector:5555
+        - OTEL_TRACES_SAMPLER=always_on
+        - OTEL_IMR_EXPORT_INTERVAL=5000
+        - OTEL_METRIC_EXPORT_INTERVAL=5000
+        - OTEL_RESOURCE_ATTRIBUTES=service.name=hello-app,service.version=1.0,deployment.environment=development
       networks:
        traefik:
         ipv4_address: 172.40.0.20
 
   loki:
     image: grafana/loki:2.6.1
+    container_name: loki
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
@@ -85,6 +110,7 @@ services:
 
   promtail:
     image: grafana/promtail:2.6.1
+    container_name: promtail
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker/containers:/var/lib/docker/containers
@@ -94,6 +120,45 @@ services:
     networks:
      traefik:
       ipv4_address: 172.40.0.122
+
+  collector:
+    image: otel/opentelemetry-collector:latest
+    container_name: collector
+    hostname: collector
+    depends_on:
+      tempo:
+        condition: service_healthy
+      prometheus:
+        condition: service_healthy
+    command: ["--config=/etc/collector-config.yaml"]
+    volumes:
+      - ./otel/collector-config-local.yaml:/etc/collector-config.yaml
+    networks:
+     traefik:
+      ipv4_address: 172.40.0.124
+    ports:
+      - "5555:5555"
+      - "6666:6666"
+
+  tempo:
+    image: grafana/tempo:latest
+    command: [ "-search.enabled=true", "-config.file=/etc/tempo.yaml" ]
+    container_name: tempo
+    hostname: tempo
+    volumes:
+      - ./tempo/tempo-config.yaml:/etc/tempo.yaml
+      - ./tempo/tempo-overrides.yaml:/etc/overrides.yaml
+      - ./tempo/data:/tmp/tempo
+    ports:
+      - "3200:3200"
+      - "4317:4317"
+    networks:
+     traefik:
+      ipv4_address: 172.40.0.126
+    healthcheck:
+      interval: 5s
+      retries: 10
+      test: wget --no-verbose --tries=1 --spider http://localhost:3200/status || exit 1
 
 networks:
  traefik:
