@@ -33,7 +33,8 @@ Run with terminal:
 curl localhost -H"Host: app1.com" -I -XGET
 curl localhost/eze -H"Host: app1.com" -I -XGET
 
-while : ; do curl localhost -H"Host: app1.com" -I -XGET ; done
+while : ; do curl localhost -H"Host: app1.com" -I -XGET && curl localhost/eze -H"Host: app1.com" -I -XGET; done
+
 ```
 
 # Grafana read prometheus data and dashboard with status codes , response time ,etc.
