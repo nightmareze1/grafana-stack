@@ -12,13 +12,17 @@ prometheus: http://localhost:9090/
 loki: http://localhost:3100/
 
 # Traefik dashboaord
+
 traefik: http://localhost:8080/
+
 grafana: http://localhost:3000/
+
 app1: http://app1.com
 
 
 Test:
 Open browser the next link:
+
 http://localhost:3000/d/A0DfKMcik/traefik-status-codes-microservices?orgId=1&refresh=5s
 
 curl localhost -H"Host: app1.com" -I -XGET
