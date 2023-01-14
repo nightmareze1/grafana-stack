@@ -9,8 +9,8 @@ Run from terminal:
 
 ```
 curl localhost -H"Host: app1.com" -I -XGET
-curl localhost/eze -H"Host: app1.com" -I -XGET
-while : ; do curl localhost -H"Host: app1.com" -I -XGET && curl localhost/eze -H"Host: app1.com" -I -XGET; done
+curl localhost/hello -H"Host: app1.com" -I -XGET
+while : ; do curl localhost -H"Host: app1.com" -I -XGET && curl localhost/hello -H"Host: app1.com" -I -XGET; done
 
 ```
 
