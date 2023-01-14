@@ -21,14 +21,16 @@ app1: http://app1.com
 
 
 Test:
-Open browser the next link:
 
-http://localhost:3000/d/A0DfKMcik/traefik-status-codes-microservices?orgId=1&refresh=5s
+Open url: http://localhost:3000/d/A0DfKMcik/traefik-status-codes-microservices?orgId=1&refresh=5s
 
+Run with terminal:
+```
 curl localhost -H"Host: app1.com" -I -XGET
-
 curl localhost/eze -H"Host: app1.com" -I -XGET
 
+while : ; do localhost -H"Host: app1.com" -I -XGET ; done
+```
 
 # Grafana read prometheus data and dashboard with status codes , response time ,etc.
 
