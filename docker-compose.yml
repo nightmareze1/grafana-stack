@@ -23,7 +23,7 @@ services:
       dockerfile: Dockerfile
     container_name: prometheus
     volumes:
-     - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+     - ./prometheus/prometheus-config.yml:/etc/prometheus/prometheus.yml
     command: "--config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus"
     healthcheck:
       interval: 5s
@@ -75,15 +75,17 @@ services:
       hostname: app1
       # image: nightmareze1/nginx:v0.0.19
       build:
-       context: ./app
+       context: ./app-java
        dockerfile: Dockerfile
       container_name: app1
       depends_on:
         - collector
       labels:
         - "traefik.enable=true"
+        - "traefik.http.routers.app1.service=app1"
         - "traefik.http.routers.app1.rule=Host(`app1.com`)"
         - "traefik.http.routers.app1.entrypoints=web"
+        - "traefik.http.services.app1.loadbalancer.server.port=8888"
       ports:
         - "8888:8888"
       environment:
@@ -93,10 +95,37 @@ services:
         - OTEL_TRACES_SAMPLER=always_on
         - OTEL_IMR_EXPORT_INTERVAL=5000
         - OTEL_METRIC_EXPORT_INTERVAL=5000
-        - OTEL_RESOURCE_ATTRIBUTES=service.name=hello-app,service.version=1.0,deployment.environment=development
+        - OTEL_RESOURCE_ATTRIBUTES=service.name=app1,service.version=1.0,deployment.environment=development
       networks:
        traefik:
         ipv4_address: 172.40.0.20
+
+  app-python:
+    build:
+     context: ./app-python
+     dockerfile: Dockerfile
+    container_name: app-python
+    depends_on:
+      - collector
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app-python.service=app-python"
+      - "traefik.http.routers.app-python.rule=Host(`app-python.com`)"
+      - "traefik.http.routers.app-python.entrypoints=web"
+      - "traefik.http.services.app-python.loadbalancer.server.port=3001"
+    environment:
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_METRICS_EXPORTER=otlp
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://collector:5555
+      - OTEL_TRACES_SAMPLER=always_on
+      - OTEL_IMR_EXPORT_INTERVAL=5000
+      - OTEL_METRIC_EXPORT_INTERVAL=5000
+      - OTEL_RESOURCE_ATTRIBUTES=service.name=app-python,service.version=1.0,deployment.environment=development
+    ports:
+      - 3001:3001
+    networks:
+     traefik:
+      ipv4_address: 172.40.0.233
 
   loki:
     image: grafana/loki:2.6.1

@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  app-python:
+    build:
+     context: .
+     dockerfile: Dockerfile
+    container_name: app-python
+    volumes:
+      - ./src:/app
+    environment:
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_METRICS_EXPORTER=otlp
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://collector:5555
+      - OTEL_TRACES_SAMPLER=always_on
+      - OTEL_IMR_EXPORT_INTERVAL=5000
+      - OTEL_METRIC_EXPORT_INTERVAL=5000
+      - OTEL_RESOURCE_ATTRIBUTES=service.name=app-python,service.version=1.0,deployment.environment=development
+    ports:
+      - 3001:3001

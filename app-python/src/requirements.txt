@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+asgiref
+python-dotenv
+python-dateutil 
+python-multipart 
+requests
+opentelemetry-instrumentation-fastapi
+opentelemetry-instrumentation-requests

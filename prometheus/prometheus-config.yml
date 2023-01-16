@@ -21,6 +21,10 @@ scrape_configs:
     static_configs:
     - targets: ['172.40.0.10:8080']
     metric_relabel_configs:
+    - source_labels: [service]
+      regex: "([^@:]+)@.+"
+      target_label: "service"
+      replacement: "$1"
 #    - source_labels: [__name__]
 #      regex: '(traefik_backend_server_up)' #This line delete unnecesary metric example
 #      action: drop
