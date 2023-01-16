@@ -10,13 +10,16 @@ Run from terminal:
 ```
 curl localhost -H"Host: app1.com" -I -XGET
 curl localhost/hello -H"Host: app1.com" -I -XGET
-while : ; do curl localhost -H"Host: app1.com" -I -XGET && curl localhost/hello -H"Host: app1.com" -I -XGET; done
+while : ; do curl localhost -H"Host: app1.com" -I -XGET && curl localhost/hello -H"Host: app1.com" &&  curl localhost/eze -XGET -H"Host: app-python.com" -H"client: X-asa" && curl localhost/request -XGET -H"Host: app-python.com" -H"client: X-asa" && curl localhost/internal_asdasderror -XGET -H"Host: app-python.com" -H"client: X-asa"; done
+
+lnx
+while ; do curl localhost -H"Host: app1.com" -I -XGET && curl localhost/hello -H"Host: app1.com" &&  curl localhost/eze -XGET -H"Host: app-python.com" -H"client: X-asa" && curl localhost/request -XGET -H"Host: app-python.com" -H"client: X-asa" && curl localhost/internal_asdasderror -XGET -H"Host: app-python.com" -H"client: X-asa"; done
 
 ```
 
 Open the URL and explore (click these links):
 
-http://localhost:3000/d/A0DfKMcik/traefik-status-codes-microservices?orgId=1&refresh=5s&var-service=app1-grafana-stack@docker&var-interval=1m&var-simple_query=container
+http://localhost:3000/d/A0DfKMcik/traefik-status-codes-microservices?orgId=1&refresh=5s
 
 http://localhost:3000/explore
 
